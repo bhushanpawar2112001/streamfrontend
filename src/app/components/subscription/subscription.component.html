@@ -1,0 +1,95 @@
+<div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+  <div class="bg-gray-900 rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-white">Subscription Plans</h2>
+      <button (click)="onClose()" class="text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Current Subscription -->
+    <div *ngIf="subscription" class="bg-gray-800 rounded-lg p-6 mb-8">
+      <h3 class="text-xl font-semibold text-white mb-4">Current Plan</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <span class="text-gray-400">Plan:</span>
+          <span class="text-white ml-2 capitalize">{{ subscription.name }}</span>
+        </div>
+        <div>
+          <span class="text-gray-400">Status:</span>
+          <span class="text-green-400 ml-2 capitalize">{{ subscription.status }}</span>
+        </div>
+        <div>
+          <span class="text-gray-400">Price:</span>
+          <span class="text-white ml-2">${{ subscription.price }}/month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Available Plans -->
+    <div class="mb-8">
+      <h3 class="text-xl font-semibold text-white mb-6">Available Plans</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div *ngFor="let plan of subscriptionPlans" class="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition duration-200">
+          <div class="text-center mb-6">
+            <h4 class="text-2xl font-bold text-white mb-2">{{ plan.name }}</h4>
+            <p class="text-3xl font-bold text-red-500">${{ plan.price }}</p>
+            <p class="text-gray-400 text-sm">{{ plan.duration }} month{{ plan.duration > 1 ? 's' : '' }}</p>
+          </div>
+          
+          <ul class="space-y-3 mb-6">
+            <li *ngFor="let feature of plan.features" class="flex items-center text-gray-300">
+              <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              {{ feature }}
+            </li>
+          </ul>
+          
+          <button 
+            (click)="upgradePlan(plan)"
+            class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-semibold transition duration-200"
+          >
+            {{ subscription?.name === plan.name ? 'Current Plan' : 'Choose Plan' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plan Comparison -->
+    <div class="bg-gray-800 rounded-lg p-6">
+      <h3 class="text-xl font-semibold text-white mb-6">Plan Comparison</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-700">
+              <th class="text-left py-3 text-gray-300">Feature</th>
+              <th *ngFor="let plan of subscriptionPlans" class="text-center py-3 text-white">{{ plan.name }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let feature of allFeatures" class="border-b border-gray-700">
+              <td class="py-3 text-gray-300">{{ feature }}</td>
+              <td *ngFor="let plan of subscriptionPlans" class="text-center py-3">
+                <span *ngIf="plan.features.includes(feature)" class="text-green-400">✓</span>
+                <span *ngIf="!plan.features.includes(feature)" class="text-gray-500">✗</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Cancel Subscription -->
+    <div *ngIf="subscription" class="mt-8 text-center">
+      <button 
+        (click)="cancelSubscription()"
+        class="text-red-400 hover:text-red-300 underline"
+      >
+        Cancel Subscription
+      </button>
+    </div>
+  </div>
+</div>

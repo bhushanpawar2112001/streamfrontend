@@ -1,0 +1,51 @@
+/* Custom scrollbar hiding for Netflix-like experience */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+/* Netflix-like hover effects */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+/* Custom gradient overlays */
+.bg-gradient-to-r {
+  background: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+.bg-gradient-to-t {
+  background: linear-gradient(to top, var(--tw-gradient-stops));
+}
+
+/* Custom button hover effects */
+button:hover {
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Netflix-like text shadows */
+.text-shadow {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Custom focus states for accessibility */
+button:focus {
+  outline: 2px solid #E50914;
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .text-5xl {
+    font-size: 2.5rem;
+  }
+  
+  .text-7xl {
+    font-size: 3rem;
+  }
+}

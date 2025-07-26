@@ -1,0 +1,117 @@
+/* Netflix-like Video.js Theme */
+.video-js {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+}
+
+/* Custom Netflix-like controls */
+.video-js .vjs-control-bar {
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  height: 80px;
+  padding: 0 20px;
+}
+
+.video-js .vjs-play-control {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+}
+
+.video-js .vjs-play-control:hover {
+  background: rgba(229, 9, 20, 0.8);
+}
+
+.video-js .vjs-progress-control {
+  height: 4px;
+  margin: 0 20px;
+}
+
+.video-js .vjs-progress-holder {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.video-js .vjs-play-progress {
+  background: #E50914;
+  height: 4px;
+}
+
+.video-js .vjs-load-progress {
+  background: rgba(255, 255, 255, 0.5);
+  height: 4px;
+}
+
+.video-js .vjs-time-control {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.video-js .vjs-volume-panel {
+  margin-right: 15px;
+}
+
+.video-js .vjs-volume-control {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  padding: 5px 10px;
+}
+
+.video-js .vjs-fullscreen-control {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.video-js .vjs-fullscreen-control:hover {
+  background: rgba(229, 9, 20, 0.8);
+}
+
+/* Big play button styling */
+.video-js .vjs-big-play-button {
+  background: rgba(229, 9, 20, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  font-size: 40px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.video-js .vjs-big-play-button:hover {
+  background: #E50914;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Loading spinner */
+.video-js .vjs-loading-spinner {
+  border: 3px solid rgba(229, 9, 20, 0.3);
+  border-top: 3px solid #E50914;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .video-js .vjs-control-bar {
+    height: 60px;
+    padding: 0 10px;
+  }
+  
+  .video-js .vjs-play-control {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .video-js .vjs-big-play-button {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    font-size: 30px;
+  }
+}

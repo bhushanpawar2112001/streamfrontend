@@ -1,0 +1,392 @@
+<!-- AnimeFlix - Anime Streaming Platform -->
+<div class="min-h-screen bg-netflix-black">
+  <!-- Header -->
+  <header class="bg-black border-b border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <h1 class="text-3xl font-bold text-red-600">ANIMEFLIX</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <!-- Debug Info (remove in production) -->
+          <div class="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded mb-2">
+            <div>AuthService.isLoggedIn(): {{ authService.isLoggedIn() }}</div>
+            <div>Component.isUserLoggedIn: {{ isUserLoggedIn }}</div>
+            <div>Token exists: {{ authService.getToken() ? 'YES' : 'NO' }}</div>
+            <div>User: {{ currentUser?.name || currentUser?.email || 'No user' }}</div>
+            <div>ShowLogin: {{ showLogin }}</div>
+          </div>
+          
+          <!-- User Profile Section -->
+          <div *ngIf="isUserLoggedIn" class="flex items-center space-x-3">
+            <!-- User Avatar -->
+            <div class="relative">
+              <img 
+                *ngIf="currentUser?.picture" 
+                [src]="currentUser.picture" 
+                [alt]="currentUser.name || 'User'"
+                class="w-8 h-8 rounded-full border-2 border-red-600 cursor-pointer hover:border-red-400 transition duration-200"
+                (click)="showUserProfile = true"
+              >
+              <div 
+                *ngIf="!currentUser?.picture" 
+                class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center cursor-pointer hover:bg-red-700 transition duration-200"
+                (click)="showUserProfile = true"
+              >
+                <span class="text-white text-sm font-semibold">{{ getUserInitials() }}</span>
+              </div>
+            </div>
+            <!-- User Name -->
+            <div class="hidden md:block">
+              <span class="text-white text-sm font-medium">{{ currentUser?.name || currentUser?.email }}</span>
+            </div>
+            <!-- Logout Button -->
+            <button
+              (click)="logout()"
+              class="text-gray-400 hover:text-white transition duration-200 text-sm"
+              title="Logout"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Login Button for Non-logged Users -->
+          <div *ngIf="!isUserLoggedIn" class="flex items-center space-x-2">
+            <button
+              (click)="showLogin = true"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+            >
+              Sign In
+            </button>
+          </div>
+          
+          <!-- Subscription Button (for logged users) -->
+          <button
+            *ngIf="isUserLoggedIn"
+            (click)="showSubscription = true"
+            class="text-white hover:text-gray-300 transition duration-200"
+            title="Subscription"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <div *ngIf="featuredAnime" class="relative h-screen bg-black overflow-hidden">
+    <!-- Background Image -->
+    <div class="absolute inset-0">
+      <img [src]="featuredAnime.image" [alt]="featuredAnime.title" 
+           class="w-full h-full object-cover opacity-40">
+      <div class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+    </div>
+    
+    <!-- Content -->
+    <div class="relative z-10 flex items-center h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl">
+        <h1 class="text-5xl md:text-7xl font-bold text-white mb-4 leading-tight">
+          {{ featuredAnime.title }}
+        </h1>
+        <p class="text-xl text-gray-300 mb-6 leading-relaxed max-w-lg">
+          {{ featuredAnime.description || 'Discover amazing anime content and immerse yourself in captivating stories.' }}
+        </p>
+        <div class="flex items-center space-x-4 mb-8">
+          <div class="flex items-center space-x-2">
+            <span class="text-yellow-400 text-lg">★</span>
+            <span class="text-white font-semibold">{{ featuredAnime.rating || 9.2 }}</span>
+          </div>
+          <span class="text-gray-400">•</span>
+          <span class="text-white">{{ featuredAnime.releaseYear || 2024 }}</span>
+          <span class="text-gray-400">•</span>
+          <span class="text-white">{{ (featuredAnime.categories && featuredAnime.categories.length > 0) ? featuredAnime.categories[0] : 'Action' }}</span>
+        </div>
+        <div class="flex space-x-4">
+          <button (click)="selectAnime(featuredAnime)" 
+                  class="bg-white hover:bg-gray-200 text-black px-8 py-3 rounded-md text-lg font-semibold transition duration-200 flex items-center space-x-2">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+            </svg>
+            <span>Play</span>
+          </button>
+          <button (click)="selectAnime(featuredAnime)" 
+                  class="bg-gray-600 hover:bg-gray-500 text-white px-8 py-3 rounded-md text-lg font-semibold transition duration-200 flex items-center space-x-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>More Info</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Sections -->
+  <div class="bg-black relative z-20 -mt-32">
+    <div class="px-4 sm:px-6 lg:px-8 pb-8">
+      
+      <!-- Continue Watching -->
+      <section class="mb-12" *ngIf="watchHistory.length > 0">
+        <h2 class="text-2xl font-bold text-white mb-6">Continue Watching</h2>
+        <div class="netflix-row">
+          <div class="netflix-row-container" #continueWatchingRow>
+            <div *ngFor="let history of watchHistory" class="netflix-card" (click)="playFromHistory(history)">
+              <div class="netflix-card-image">
+                <img src="https://via.placeholder.com/300x169/1a1a1a/ffffff?text={{ history.animeTitle }}" [alt]="history.animeTitle" class="w-full h-full object-cover">
+                <div class="netflix-card-overlay">
+                  <div class="netflix-card-play-btn">
+                    <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="netflix-card-info">
+                  <h3 class="text-white text-sm font-semibold truncate">{{ history.animeTitle }}</h3>
+                  <p class="text-gray-300 text-xs mt-1">Episode {{ history.episodeNumber }}</p>
+                  <div class="bg-gray-700 h-1 rounded-full mt-2">
+                    <div class="bg-red-600 h-1 rounded-full" [style.width.%]="history.progress"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="netflix-nav-btn netflix-nav-prev" (click)="scrollRow('continueWatchingRow', 'left')">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <button class="netflix-nav-btn netflix-nav-next" (click)="scrollRow('continueWatchingRow', 'right')">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Trending Now -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-white mb-6">Trending Now</h2>
+        <div class="netflix-row">
+          <div class="netflix-row-container" #trendingRow>
+            <div *ngFor="let anime of animeList" class="netflix-card" (click)="selectAnime(anime)">
+              <div class="netflix-card-image">
+                <img [src]="anime.image" [alt]="anime.title" class="w-full h-full object-cover">
+                <div class="netflix-card-overlay">
+                  <div class="netflix-card-play-btn">
+                    <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="netflix-card-info">
+                  <h3 class="text-white text-sm font-semibold truncate">{{ anime.title }}</h3>
+                  <div class="flex items-center mt-1">
+                    <span class="text-yellow-400 text-xs">★</span>
+                    <span class="text-white text-xs ml-1">{{ anime.rating }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="netflix-nav-btn netflix-nav-prev" (click)="scrollRow('trendingRow', 'left')">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <button class="netflix-nav-btn netflix-nav-next" (click)="scrollRow('trendingRow', 'right')">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Popular Anime -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-white mb-6">Popular Anime</h2>
+        <div class="netflix-row">
+          <div class="netflix-row-container" #popularRow>
+            <div *ngFor="let anime of animeList" class="netflix-card" (click)="selectAnime(anime)">
+              <div class="netflix-card-image">
+                <img [src]="anime.image" [alt]="anime.title" class="w-full h-full object-cover">
+                <div class="netflix-card-overlay">
+                  <div class="netflix-card-play-btn">
+                    <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="netflix-card-info">
+                  <h3 class="text-white text-sm font-semibold truncate">{{ anime.title }}</h3>
+                  <div class="flex items-center mt-1">
+                    <span class="text-yellow-400 text-xs">★</span>
+                    <span class="text-white text-xs ml-1">{{ anime.rating }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="netflix-nav-btn netflix-nav-prev" (click)="scrollRow('popularRow', 'left')">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <button class="netflix-nav-btn netflix-nav-next" (click)="scrollRow('popularRow', 'right')">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- New Releases -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-white mb-6">New Releases</h2>
+        <div class="netflix-row">
+          <div class="netflix-row-container" #newReleasesRow>
+            <div *ngFor="let anime of animeList" class="netflix-card" (click)="selectAnime(anime)">
+              <div class="netflix-card-image">
+                <img [src]="anime.image" [alt]="anime.title" class="w-full h-full object-cover">
+                <div class="netflix-card-overlay">
+                  <div class="netflix-card-play-btn">
+                    <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="netflix-card-info">
+                  <h3 class="text-white text-sm font-semibold truncate">{{ anime.title }}</h3>
+                  <div class="flex items-center mt-1">
+                    <span class="text-yellow-400 text-xs">★</span>
+                    <span class="text-white text-xs ml-1">{{ anime.rating }}</span>
+                  </div>
+                  <div class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded">NEW</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="netflix-nav-btn netflix-nav-prev" (click)="scrollRow('newReleasesRow', 'left')">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <button class="netflix-nav-btn netflix-nav-next" (click)="scrollRow('newReleasesRow', 'right')">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Categories -->
+      <section class="mb-12" *ngIf="categories.length > 0">
+        <h2 class="text-2xl font-bold text-white mb-6">Browse by Category</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div *ngFor="let category of categories" 
+               class="bg-gray-800 hover:bg-gray-700 rounded-lg p-4 cursor-pointer transition duration-200">
+            <h3 class="text-white font-semibold text-center">{{ category.name }}</h3>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Video Player Modal -->
+  <app-video-player 
+    *ngIf="showPlayer" 
+    [videoId]="'video-player-' + (currentEpisode?._id || 'default')"
+    [videoUrl]="currentEpisode?.video || ''"
+    [posterUrl]="currentEpisode?.thumbnail || selectedAnime?.image || ''"
+    [title]="(selectedAnime?.title || '') + ' - ' + (currentSeason?.title || '') + ' - ' + (currentEpisode?.title || '')"
+    [showPlayer]="showPlayer"
+    (closePlayer)="closePlayer()">
+  </app-video-player>
+
+  <!-- User Profile Modal -->
+  <app-user-profile 
+    *ngIf="showUserProfile" 
+    [user]="currentUser"
+    (close)="showUserProfile = false">
+  </app-user-profile>
+
+  <!-- Subscription Modal -->
+  <app-subscription 
+    *ngIf="showSubscription" 
+    [subscription]="currentSubscription"
+    (close)="showSubscription = false">
+  </app-subscription>
+
+  <!-- Login Prompt Modal -->
+  <div *ngIf="showLoginPrompt" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-gray-900 rounded-lg p-8 max-w-md w-full mx-4">
+      <div class="text-center">
+        <div class="mb-4">
+          <svg class="w-16 h-16 text-red-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-4">Login Required</h3>
+        <p class="text-gray-300 mb-6">
+          You need to login to watch anime content. Browse our collection freely, but sign in to start streaming!
+        </p>
+        <div class="space-y-4">
+          <!-- Google Login Button -->
+          <button 
+            (click)="loginWithGoogle()"
+            class="w-full bg-white hover:bg-gray-100 text-gray-900 px-6 py-3 rounded-md font-semibold transition duration-200 flex items-center justify-center space-x-3 border border-gray-300">
+            <svg class="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+          
+          <!-- Divider -->
+          <div class="flex items-center">
+            <div class="flex-1 border-t border-gray-600"></div>
+            <span class="px-3 text-gray-400 text-sm">or</span>
+            <div class="flex-1 border-t border-gray-600"></div>
+          </div>
+          
+          <!-- Regular Login Button -->
+          <button 
+            (click)="redirectToLogin()"
+            class="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md font-semibold transition duration-200">
+            Login with Email
+          </button>
+          
+          <!-- Continue Browsing Button -->
+          <button 
+            (click)="closeLoginPrompt()"
+            class="w-full bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-md font-semibold transition duration-200">
+            Continue Browsing
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Anime Detail Modal -->
+  <app-anime-detail
+    [anime]="selectedAnime"
+    [isVisible]="showAnimeDetail"
+    (close)="closeAnimeDetail()"
+    (playEpisode)="playEpisode($event)"
+    (playTrailer)="playTrailer($event)">
+  </app-anime-detail>
+
+  <!-- Login Modal -->
+  <app-login
+    [isVisible]="showLogin"
+    (close)="showLogin = false"
+    (loginSuccess)="onLoginSuccess($event)">
+  </app-login>
+</div>
